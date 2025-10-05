@@ -9,7 +9,7 @@ import os
 @pytest.fixture(scope="module")
 def driver():
     extension_path = os.getcwd()
-    extension_id = "<PLUGIN_EXTENSION_ID>"
+    extension_id = "fcngofpenigoifmldedigljnnjglmggh"
     extension_url = f"chrome-extension://{extension_id}/login.html"
 
     chrome_options = Options()

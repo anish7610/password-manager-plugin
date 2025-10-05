@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const addCloseButton = addPasswordForm.querySelector("#closeButton");
     const passwordList = document.getElementById("password-list");
 
+    // Add Password form text fields
+    const siteUsernameField = document.getElementById("siteUsername");
+    const passwordField = document.getElementById("password");
+    const websiteField = document.getElementById("website");
+
     let username;
 
     chrome.storage.local.get('isLoggedIn', function(result){
@@ -27,6 +32,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // open addPasswordForm on add button click
     addPasswordButton.addEventListener('click', function(event) {
         event.preventDefault();
+        siteUsernameField.value = "";
+        passwordField.value = "";
+        websiteField.value = "";
         toggleVisibility(addPasswordForm);
     });
 
@@ -45,10 +53,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // save password to indexDB
     addPasswordForm.addEventListener('submit', function(event) {
         event.preventDefault();
-
-        const siteUsername = document.getElementById("siteUsername").value;
-        const password = document.getElementById("password").value;
-        const website = document.getElementById("website").value;  
+        let siteUsername = siteUsernameField.value;
+        let password = passwordField.value;
+        let website = websiteField.value;
     
         addPassword(username, siteUsername, password, website).then((event) => {
             var passwordId = event.target.result;
@@ -60,6 +67,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 "website": website
             });
             passwordList.appendChild(listItem);
+            addCloseButton.click();
+
         }).catch((error) => {
             console.error(error);
         })
@@ -164,6 +173,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const editPassword = editForm.querySelector('#password');
         const editWebsite = editForm.querySelector('#website');
 
+        editPassword.value = password.password;
         editSiteUsername.value = password.siteUsername;
         editWebsite.value = password.website;
 

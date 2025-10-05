@@ -19,14 +19,10 @@ def add_password(driver, site_data):
 
     # Add Password
     add_password_button.click()
-    site_username_input.clear()
-    site_password_input.clear()
-    site_website_input.clear()
     site_username_input.send_keys(site_data["siteUsername"])
     site_password_input.send_keys(site_data["sitePassword"])
     site_website_input.send_keys(site_data["website"])
     submit_password_button.click()
-    close_button.click()
 
 
 def edit_form_fields(driver, list_item_id, edit_field_values):
