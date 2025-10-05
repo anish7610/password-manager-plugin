@@ -111,7 +111,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 editPasswordDetails(editForm);
             });
 
+            const editCloseButton = editForm.querySelector("#closeButton");
             const showPasswordButton = editForm.querySelector('#showPassword');
+
+            // close editPasswordForm
+            editCloseButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                toggleVisibility(editForm);
+                editPasswordButton.disabled = false;
+            });
 
             showPasswordButton.onclick = function(event) {
                 event.preventDefault();
