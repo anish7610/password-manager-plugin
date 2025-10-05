@@ -278,8 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function sendMessageToContentScript(username, password) {
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
             var activeTab = tabs[0];
-            // alert(activeTab.title);
-            chrome.tabs.sendMessage(activeTab.id, { action: 'autofill', username: username, password: password});
+            chrome.tabs.sendMessage(activeTab.id, { action: 'autofill', username: username, password: password, title: activeTab.title});
         });
     }
 });
