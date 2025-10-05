@@ -1,4 +1,4 @@
-const DEFAULT_USERNAME = 'input[type="password"][name="username"]'
+const DEFAULT_USERNAME = 'input[type="text"][name="username"]'
 const DEFAULT_EMAIL = 'input[type="email"][name="email"]'
 const DEFAULT_PASSWORD = 'input[type="password"][name="password"]'
 const LINKEDIN_USERNAME = 'input[type="text"][name="session_key"]'
@@ -10,7 +10,7 @@ const FACEBOOK_PASSWORD = 'input[type="password"][name="pass"]'
 const NETFLIX_EMAIL = 'input[type="email"][name="userLoginId"]'
 const HULU_EMAIL = 'input[type="text"][data-automationid="email-field"]'
 const HULU_PASSWORD = 'input[type="password"][data-automationid="password-field"]'
-
+const GITHUB_USERNAME = 'input[type="text"][name="login"]'
 const RENTCAFE_USERNAME = 'input[type="text"][name="Username"]'
 const RENTCAFE_PASSWORD = 'input[type="password"][name="Password"]'
 
@@ -55,16 +55,16 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
             usernameSelector = GMAIL_EMAIL;
             passwordSelector = GMAIL_PASSWORD;
             break;
+          case title.indexOf('GitHub') !== -1:
+            usernameSelector = GITHUB_USERNAME;
+            passwordSelector = DEFAULT_PASSWORD;
+            break;
           case title.indexOf('RentCafe') !== -1:
             usernameSelector = RENTCAFE_USERNAME;
             passwordSelector = RENTCAFE_PASSWORD;
             break;
           default:
-            if (message.username.includes("@")) {
-              usernameSelector = DEFAULT_EMAIL;
-            } else {
-              usernameSelector = DEFAULT_USERNAME
-            }
+            usernameSelector = DEFAULT_USERNAME
             passwordSelector = DEFAULT_PASSWORD;
         }
         autofillCredentials(usernameSelector, passwordSelector, message.username, message.password);

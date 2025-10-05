@@ -156,7 +156,7 @@ export function importPasswords(file) {
                     if (cols[0] != result.username) {
                         cols[0] = result.username;
                     }
-
+                    cols[2] = decodeURIComponent(cols[2]);
                     addPassword(cols[0], cols[1], cols[2], cols[3]).then(() => {
 
                     }).catch((error) => {
@@ -176,7 +176,8 @@ export async function exportPasswords(filename) {
             getAllPasswords(result.username).then(passwords => {
                 Promise.all(passwords.map(password => decryptSitePassword(password.username, password.password))).then((decryptedPasswords) => {
                     passwords.forEach((password, index) => {
-                        password.password = decryptedPasswords[index];
+                        const encodedDecryptedPasswords = decryptedPasswords.map(encodeURIComponent);
+                        password.password = encodedDecryptedPasswords[index];
                         delete password.id;
                     });
                     downloadCSV(filename + ".csv", ['username', 'siteUsername', 'password', 'website'], passwords);
