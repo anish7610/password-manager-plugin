@@ -1,0 +1,27 @@
+{
+    "manifest_version": 3,
+    "name": "Password Manager",
+    "version": "1.0",
+    "description": "Password Manager",
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
+      },
+    "permissions": [
+      "activeTab",
+      "storage"
+    ],
+    "action": {
+      "default_popup": "login.html",
+      "default_icon": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+      }
+    },
+    "icons": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  }
+  

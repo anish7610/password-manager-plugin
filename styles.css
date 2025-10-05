@@ -1,0 +1,61 @@
+body {
+    width: 300px;
+    height: 300px;
+}
+
+.plugin-name {
+    text-align: center;
+}
+
+/* Apply styles to the login container */
+.login-container, .account-container {
+    width: 220px;
+    margin-top: 40px;
+    margin-left: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Apply styles to the form elements */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 80%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Apply styles to the submit button */
+button[type="submit"] {
+    /* margin: 0 auto; */
+    margin-right: 10px;
+    width: auto;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Apply styles to error message */
+.error-message {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+}
