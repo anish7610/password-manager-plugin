@@ -5,19 +5,20 @@ export function openIndexedDB() {
         const request = indexedDB.open('plugindb', 1);
         dbInstance = new Promise((resolve, reject) => {
             
-            request.onerror = () => reject('Error opening database');
+            request.onerror = (event) => {
+                alert(event.target.error);
+            }
             
             request.onsuccess = () => resolve(request.result);
             
             request.onupgradeneeded = (event) => {
-                console.log("upgrade called");
                 const db = event.target.result;
-                const objectStore = db.createObjectStore("userAccounts", { keyPath: "username"})
-                resolve(db);
+                const userStore = db.createObjectStore("userAccounts", { keyPath: "username"})
+                const passwordStore = db.createObjectStore("passwords", { keyPath: "id", autoIncrement: true});
+                passwordStore.createIndex("password", "password");
+                passwordStore.createIndex("username", "username");
             };
         });
     }
     return dbInstance;
 }
-
-

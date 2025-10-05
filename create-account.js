@@ -41,6 +41,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }).catch((error) => {
                 reject(error);
             });
-        })
+        });
     }
 });

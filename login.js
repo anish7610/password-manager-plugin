@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // alert(result);
             if (result) {
                 if (password === result.password) {
-                    window.location.href = 'display-passwords.html';
+                    window.location.href = 'view_passwords.html?username=' + encodeURIComponent(result.username);
                 } else {
                     errorMessage.textContent = "Invalid Credentials";
                 }
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
         }).catch((error) => {
-            alert(error);
+            alert("Error: " + error);
         })
     });
     
@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 const getRequest = objectStore.get(username);
                 
                 getRequest.onsuccess = function(event) {
-                    alert(event.target.result.id);
                     resolve(event.target.result);
                 }
 
