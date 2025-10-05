@@ -156,3 +156,21 @@ export function updatePassword(id, username, siteUsername, password, website) {
         });
     });
 }
+
+export function deletePassword(passwordId) {
+    return new Promise((resolve, reject) => {
+        openIndexedDB().then((db) => {
+            const transaction = db.transaction(['passwords'], 'readwrite');
+            const objectStore = transaction.objectStore('passwords');
+            var delRequest = objectStore.delete(passwordId);
+
+            delRequest.onerror = function(event) {
+                reject("Failed to delete password");
+            }
+
+            delRequest.onsuccess = function(event) {
+                resolve();
+            }
+        });
+    });
+}

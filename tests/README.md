@@ -8,5 +8,5 @@
 
 ### Filter tests
 
-- pytest -v -s -k test_passwords
-- pytest -v -s -k test_edit
+- pytest -v -s -k passwords
+- pytest -v -s -k edit
