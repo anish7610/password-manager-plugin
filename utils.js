@@ -170,7 +170,7 @@ export function importPasswords(file) {
 }
 
 
-export async function exportPasswords() {
+export async function exportPasswords(filename) {
     chrome.storage.local.get('username', function(result){
         if (result) {
             getAllPasswords(result.username).then(passwords => {
@@ -179,7 +179,7 @@ export async function exportPasswords() {
                         password.password = decryptedPasswords[index];
                         delete password.id;
                     });
-                    downloadCSV(result.username + "_passwords.csv", ['username', 'siteUsername', 'password', 'website'], passwords);
+                    downloadCSV(filename + ".csv", ['username', 'siteUsername', 'password', 'website'], passwords);
                 });
             });
         }
@@ -197,18 +197,12 @@ function downloadCSV(filename, headers, data) {
 
     // Create a data URI for the CSV content
     var encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv);
+    var downloadFileLink = document.getElementById("exportedFile");
 
-    // Create a temporary link element to trigger the download
-    var link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', filename);
-
-    var spanElement = document.createElement('span');
-    spanElement.textContent = "Download File: ";
-
-    link.textContent = filename;
-    document.querySelector("#fileSaveMessage").appendChild(spanElement);
-    document.querySelector("#fileSaveMessage").appendChild(link);
+    toggleVisibility(document.getElementById('spanText'));
+    downloadFileLink.setAttribute("href", encodedUri);
+    downloadFileLink.setAttribute('download', filename);
+    downloadFileLink.innerText = filename;
 }
 
 export function copyToClipboard(textToCopy) {
@@ -229,12 +223,10 @@ export function copyToClipboard(textToCopy) {
     document.body.removeChild(tempTextarea);
 }
 
-export function togglePasswordVisibility(passwordInput, showPasswordBtn) {
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        showPasswordBtn.textContent = "Hide";
+export function toggleVisibility(element) {
+    if (element.style.display == "none") {
+        element.style.display = "block";
     } else {
-        passwordInput.type = "password";
-        showPasswordBtn.textContent = "Show";
+        element.style.display = "none";
     }
 }

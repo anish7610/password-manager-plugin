@@ -10,7 +10,16 @@
 </body>
     <div id="navbarContainer""></div>
     <div class="page-container"  style="margin-top:50px;">
-        <div id="fileSaveMessage"></div>
+        <form id="exportForm">
+            <div class="form-group">
+                <label for="outputFile">File Name:</label>
+                <input type="text" id="outputFile" style="width: 50%;" required>
+            </div>
+            <button>Export</button>
+            <br>
+        </form>
+        <br>
+        <span id="spanText" style="display: none;">Download File: <a id="exportedFile" href="#"></a></span>
     </div>
     <script type="module" src="export.js"></script>
     <script type="module" src="navbar.js"></script>
