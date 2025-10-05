@@ -1,17 +1,20 @@
 import { encryptPassword, decryptPassword } from "./cryptoUtils.js";
-import { openIndexedDB, getUserAccount } from "./dbService.js";
+import { openIndexedDB, getUserAccount, getPassword } from "./dbService.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     const addPasswordButton = document.getElementById("addPassword");
     const closeButton = document.getElementById("closeButton");
     const addPasswordForm = document.getElementById("addPasswordForm");
     const passwordList = document.getElementById("password-list");
-
-    var urlParams = new URLSearchParams(window.location.search);
-    var username = urlParams.get('username');
-
-    // display all passwords on page load
-    displayPasswords(username);
+    const logoutLink = document.getElementById("logout");
+    let username;
+    chrome.storage.local.get('username', function(result){
+        if (result.username) {
+            // display all passwords on page load
+            username = result.username;
+            displayPasswords(username);
+        }
+    });
 
     // open addPasswordForm on add button click
     addPasswordButton.addEventListener('click', function(event) {
@@ -24,6 +27,17 @@ document.addEventListener("DOMContentLoaded", function() {
         event.preventDefault();
         toggleFormVisibility();
     });
+
+    if (logoutLink) {
+        logoutLink.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default action of the link
+            // unset cookie
+            chrome.storage.local.set({isLoggedIn: false, username: ''})
+
+            // For demonstration, redirecting to a login page
+            window.location.href = "login.html";
+        });
+    }
 
     // save password to indexDB
     addPasswordForm.addEventListener('submit', function(event) {
@@ -38,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }).catch((error) => {
             console.error(error);
         })
-    })
+    });
 
     function storePassword(username, siteUsername, password, website) {
         return new Promise((resolve, reject) => {
@@ -167,11 +181,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
                             var link = document.createElement('a');
                             link.href = password.website;
-
-                            const domain = password.website.split("www.")[1];
-                            link.textContent = domain.charAt(0).toUpperCase() +  domain.slice(1, -4);
+                            link.textContent = password.website;
 
                             listItem.append(link);
+
+                            const autoFillButton = document.createElement('button');
+                            autoFillButton.textContent = 'AutoFill';
+                            autoFillButton.setAttribute('id', password.id);
                             
                             const editPasswordButton = document.createElement('button');
                             editPasswordButton.textContent = 'Edit';
@@ -191,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                     event.preventDefault();
                                     console.log("close button");
                                     editForm.style.display = 'none';
-                                })
+                                });
 
                                 const editSiteUsername = editForm.querySelector('#siteUsername');
                                 const editPassword = editForm.querySelector('#password');
@@ -207,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                 listItem.appendChild(editForm);
 
                                 editForm.addEventListener('submit', function() {
-                                    console.log('edit submit');
+                                    event.preventDefault();
                                     const id = editForm.getAttribute('id');
                                     const username = editForm.getAttribute('username');
                                     const siteUsername = editForm.querySelector('#siteUsername').value;
@@ -216,6 +232,17 @@ document.addEventListener("DOMContentLoaded", function() {
                                     updatePassword(id, username, siteUsername, password, website);
                                 });
                             }
+
+                            autoFillButton.onclick = function() {
+                                const passwordId = autoFillButton.getAttribute('id');
+
+                                getPassword(parseInt(passwordId)).then((password) => {
+                                    decryptSitePassword(password.username, password.password).then((decryptedPassword) => {
+                                        // alert(decryptedPassword);
+                                        sendMessageToContentScript(password.siteUsername, decryptedPassword);
+                                    });
+                                });
+                            };
 
                             deletePasswordButton.onclick = function() {
                                 const transaction = db.transaction(['passwords'], 'readwrite');
@@ -226,6 +253,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                             listItem.appendChild(deletePasswordButton);
                             listItem.appendChild(editPasswordButton);
+                            listItem.appendChild(autoFillButton);
                             passwordList.appendChild(listItem);
                         });
 
@@ -244,5 +272,14 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             form.classList.add("hidden")
         }
+    }
+
+    // Function to send a message to the content script with arguments
+    function sendMessageToContentScript(username, password) {
+        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+            var activeTab = tabs[0];
+            // alert(activeTab.title);
+            chrome.tabs.sendMessage(activeTab.id, { action: 'autofill', username: username, password: password});
+        });
     }
 });

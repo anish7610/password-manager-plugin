@@ -29,6 +29,18 @@ body {
     background-color: #f9f9f9;
 }
 
+.login-header {
+    display: flex;
+}
+
+.login-header h2 {
+    margin-right: 40%;
+}
+
+.login-header a {
+    float: right;
+    margin-top: 20px;
+}
 
 .show-button {
     float: left; /* Align the button to the right */

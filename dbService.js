@@ -43,3 +43,24 @@ export function getUserAccount(username) {
         });
     });
 }
+
+export function getPassword(passwordId) {
+    return new Promise((resolve, reject) => {
+        openIndexedDB().then((db) => {
+            const transaction = db.transaction(['passwords'], 'readonly');
+            const objectStore = transaction.objectStore('passwords');
+
+            const getRequest = objectStore.get(passwordId);
+
+            getRequest.onsuccess = function(event) {
+                resolve(event.target.result);
+            }
+
+            getRequest.onerror = function(event) {
+                reject('Error adding password to database', event.target.errorCode);
+            }
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}

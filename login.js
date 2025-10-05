@@ -6,6 +6,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const createAccountButton = document.getElementById('createAccount');
     const errorMessage = document.getElementById('errorMessage');
 
+    chrome.storage.local.get('isLoggedIn', function(result){
+        if (result.isLoggedIn) {
+                window.location.href = 'view_passwords.html';
+        }
+    });
+
     loginForm.addEventListener('submit',  function(event) {
         event.preventDefault();
         
@@ -18,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (userAccount) {
                 hashPassword(password).then((hashedPassword) => {
                     if (hashedPassword === userAccount.password) {
+                        chrome.storage.local.set({isLoggedIn: true, username: username});
                         window.location.href = 'view_passwords.html?username=' + encodeURIComponent(userAccount.username);
                     } else {
                         errorMessage.textContent = "Invalid Credentials";
