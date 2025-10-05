@@ -32,9 +32,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // open addPasswordForm on add button click
     addPasswordButton.addEventListener('click', function(event) {
         event.preventDefault();
-        siteUsernameField.value = "";
-        passwordField.value = "";
-        websiteField.value = "";
         toggleVisibility(addPasswordForm);
     });
 
@@ -67,7 +64,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 "website": website
             });
             passwordList.appendChild(listItem);
-            addCloseButton.click();
+            siteUsernameField.value = "";
+            passwordField.value = "";
+            websiteField.value = "";
 
         }).catch((error) => {
             console.error(error);
