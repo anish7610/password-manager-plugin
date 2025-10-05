@@ -1,6 +1,5 @@
 username,siteUsername,password,website
-test,bob,1234,plex.tv
-test,alice,5678,fubo.tv
-test,john,1111,imdb.com
-test,mary,2222,roku.com
-test,jane,3333,tubitv
+test,bob,1234,facebook.com
+test,alice,5678,linkedin.com
+test,john,1111,yahoo.com
+test,mary,2222,gmail.com

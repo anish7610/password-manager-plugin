@@ -18,7 +18,7 @@ def create_account(driver, username = "test", password = "test"):
     create_account_button = driver.find_element(By.ID, 'create_account')
     create_account_button.click()
     
-    time.sleep(0.5)
+    time.sleep(0.2)
     
 
 def login(driver, username = "test", password = "test"):
@@ -32,7 +32,7 @@ def login(driver, username = "test", password = "test"):
     login_button = driver.find_element(By.ID, 'login')
     login_button.click()
 
-    time.sleep(0.5)
+    time.sleep(0.2)
 
 
 def logout(driver):

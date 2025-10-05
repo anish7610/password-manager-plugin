@@ -8,6 +8,7 @@ import time
 
 
 def add_password(driver, site_data):
+    # Add Password Form selectors
     add_password_button = driver.find_element(By.ID, "addPassword")
     close_button = driver.find_element(By.ID, "closeButton")
     submit_password_button = driver.find_element(By.ID, "addPasswordFormButton")
@@ -15,6 +16,7 @@ def add_password(driver, site_data):
     site_password_input = driver.find_element(By.ID, "password")
     site_website_input = driver.find_element(By.ID, "website")
 
+    # Add Password
     add_password_button.click()
     site_username_input.clear()
     site_password_input.clear()
@@ -27,15 +29,16 @@ def add_password(driver, site_data):
 
 
 def edit_form_fields(driver, list_item_id, edit_field_values):
-    edit_button_xpath = f"//*[@id={list_item_id}]/button[2]"
+    # Click Edit
+    edit_button_xpath = f"//li[{list_item_id}]/button[2]"
     edit_button = driver.find_element(By.XPATH, edit_button_xpath)
     edit_button.click()
     
     # Edit Form Fields
-    site_username_input = driver.find_element(By.XPATH, f"/html/body/div[2]/ul/li[{list_item_id}]/form/div[1]/input")
-    site_password_input = driver.find_element(By.XPATH, f"/html/body/div[2]/ul/li[{list_item_id}]/form/div[2]/input")
-    site_website_input = driver.find_element(By.XPATH, f"/html/body/div[2]/ul/li[{list_item_id}]/form/div[3]/input")
-    edit_form_submit_button = driver.find_element(By.XPATH, f"/html/body/div[2]/ul/li[{list_item_id}]/form/button[1]")
+    site_username_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[1]/input")
+    site_password_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[2]/input")
+    site_website_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[3]/input")
+    edit_form_submit_button = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/button[1]")
 
     # Edit Form
     site_username_input.clear()
@@ -46,29 +49,31 @@ def edit_form_fields(driver, list_item_id, edit_field_values):
 
     site_website_input.clear()
     site_website_input.send_keys(edit_field_values["website"])
-    
+
     edit_form_submit_button.click()
 
 
 def validate_form_fields(driver, list_item_id, edit_field_values):
-    # Validate edited website in list item
-    link_text = driver.find_element(By.XPATH, f"//*[@id={list_item_id}]/a") 
+    # Validate Edited website in list item
+    link_text = driver.find_element(By.XPATH,  f"//li[{list_item_id}]/a") 
     assert edit_field_values["website"] == link_text.text
 
-    # Validate edited form fields
-    edit_button_xpath = f"//*[@id={list_item_id}]/button[2]"
+    # Validate Edited Form Fields
+    edit_button_xpath = f"//li[{list_item_id}]/button[2]"
     driver.find_element(By.XPATH, edit_button_xpath).click()
     
-    site_username_input = driver.find_element(By.XPATH, f"/html/body/div[2]/ul/li[{list_item_id}]/form/div[1]/input")
+    site_username_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[1]/input")
     assert site_username_input.get_attribute("value") == edit_field_values["username"]
 
-    site_password_input = driver.find_element(By.XPATH, f"/html/body/div[2]/ul/li[{list_item_id}]/form/div[2]/input")
+    site_password_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[2]/input")
     assert site_password_input.get_attribute("value") == edit_field_values["password"]
 
 
 def validate_csv(driver, file_path, expected_site_data):
     outputCSVFile = driver.find_element(By.ID, "exportedFile")
     outputCSVFile.click()
+
+    # Wait for file download
     time.sleep(0.2)
 
     with open(file_path, 'r') as f:
@@ -80,12 +85,23 @@ def validate_csv(driver, file_path, expected_site_data):
             assert row["website"] == expected_site_data[row_no]["website"]
  
 
-def delete_passwords(driver, num_of_passwords):
-    for i in range(1, num_of_passwords + 1):
-        delete_button_xpath = f"//*[@id={i}]/button[1]"
-        delete_button = driver.find_element(By.XPATH, delete_button_xpath)
-        delete_button.click()
-        time.sleep(0.2)
+def delete_passwords(driver):
+    delete_all_passwords = """
+        var request = indexedDB.open('plugindb', 1);
+        request.onsuccess = function(event) {
+        var db = event.target.result;
+        var transaction = db.transaction(['passwords'], 'readwrite');
+        var objectStore = transaction.objectStore('passwords');
+        var clearRequest = objectStore.clear();
+        clearRequest.onsuccess = function(event) {
+            console.log('All entries deleted successfully');
+        };
+        clearRequest.onerror = function(event) {
+            console.error('Error deleting entries:', event.target.error);
+        };
+        };
+    """
+    driver.execute_script(delete_all_passwords)
 
 
 def test_add_password(setup):
@@ -99,6 +115,8 @@ def test_add_password(setup):
     for idx, site in enumerate(site_data):
         link_text = driver.find_element(By.XPATH, f"//*[@id={idx + 1}]/a")
         assert site["website"] == link_text.text
+
+    delete_passwords(driver)
 
 
 def test_edit_password(setup):
@@ -117,12 +135,11 @@ def test_edit_password(setup):
         "website": "edited_" + site_data[list_item_id - 1]["website"]
     }
 
-    edit_form_fields(driver, list_item_id, edit_field_values)
-    
+    edit_form_fields(driver, list_item_id, edit_field_values)    
+
     validate_form_fields(driver, list_item_id, edit_field_values)
-    
-    # cleanup
-    delete_passwords(driver, len(site_data))
+
+    delete_passwords(driver)
 
 
 def test_delete_password(setup):
@@ -134,9 +151,9 @@ def test_delete_password(setup):
     site_data = random.choice(test_data)
     add_password(driver, site_data)
     
-    delete_button = driver.find_element(By.XPATH, "//button[text()='Delete']")
+    delete_button = driver.find_element(By.XPATH, "//li[1]/button[1]")
     delete_button.click()
-    
+
     bodyText = driver.find_element(By.TAG_NAME, 'body').text
     assert site_data["website"] not in bodyText
 
@@ -145,21 +162,21 @@ def test_export_passwords(setup):
     driver = setup
 
     with open('test_data.json', 'r') as f:
-        site_data = json.load(f)[:2]
+        site_data = json.load(f)
 
     for site in site_data: add_password(driver, site)
     
     export_link = driver.find_element(By.ID, "exportPasswords")
     export_link.click()
     
-    # Update this to your browser's default download directory
+    # Update this to your browser's default download location
     download_dir = "/Users/anish/Downloads"
     filename = "test_" + str(random.randint(1, 100))
+    # print("Export FileName: ", filename)
     file_path = os.path.join(download_dir, filename)
     
     filename_input = driver.find_element(By.ID, "outputFile")
     filename_input.send_keys(filename)
-
     export_button = driver.find_element(By.XPATH, "//button[text()='Export']")
     export_button.click()
     
@@ -168,20 +185,21 @@ def test_export_passwords(setup):
 
     validate_csv(driver, file_path + ".csv", site_data)
 
+    delete_passwords(driver)
+
 
 def test_import_passwords(setup):
     driver = setup
+
     filename = "test_data.csv"
     file_path = os.path.join(os.getcwd(), "tests", filename)
 
     import_link = driver.find_element(By.ID, "importPasswords")
     import_link.click()
-
     file_upload_input = driver.find_element(By.ID, "fileInput")
     file_upload_input.send_keys(file_path)
 
     bodyText = driver.find_element(By.TAG_NAME, 'body').text
-
     assert "Passwords imported successfully" in bodyText
     
     home_page = driver.find_element(By.ID, "home")
@@ -194,3 +212,5 @@ def test_import_passwords(setup):
 
         for row in csv_reader:
             assert row["website"] in bodyText
+
+    delete_passwords(driver)
