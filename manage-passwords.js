@@ -1,4 +1,5 @@
-import { openIndexedDB } from "./dbService.js";
+import { encryptPassword, decryptPassword } from "./cryptoUtils.js";
+import { openIndexedDB, getUserAccount } from "./dbService.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     const addPasswordButton = document.getElementById("addPassword");
@@ -42,19 +43,53 @@ document.addEventListener("DOMContentLoaded", function() {
     function storePassword(username, siteUsername, password, website) {
         return new Promise((resolve, reject) => {
             openIndexedDB().then((db) => {          
-                const transaction = db.transaction(['passwords'], 'readwrite');
-                const objectStore = transaction.objectStore('passwords');
-                const addRequest = objectStore.add({username: username, siteUsername: siteUsername, password: password, website: website});
+                encryptSitePassword(username, password).then((encryptedPassword) => {
+                    // alert(encryptedPassword);
+                    const transaction = db.transaction(['passwords'], 'readwrite');
+                    const objectStore = transaction.objectStore('passwords');
+                    const addRequest = objectStore.add({username: username, siteUsername: siteUsername, password: encryptedPassword, website: website});
 
-                addRequest.onsuccess = function(event) {
-                    displayPasswords(username).then((result) => {
-                        resolve(result);
-                    })
-                }
+                    addRequest.onsuccess = function(event) {
+                        displayPasswords(username).then((result) => {
+                            resolve(result);
+                        })
+                    }
 
-                addRequest.onerror = function(event) {
-                    reject('Error adding password to database', event.target.errorCode);
-                }
+                    addRequest.onerror = function(event) {
+                        reject('Error adding password to database');
+                    }
+                }).catch((error) => {
+                    reject(error);
+                });
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
+
+    function encryptSitePassword(username, password) {
+        return new Promise((resolve, reject) => {
+            getUserAccount(username).then((userAccount) => {
+                encryptPassword(password, userAccount.derivedKey, userAccount.iv).then((encryptedPassword) => {
+                    resolve(encryptedPassword);
+                }).catch((error) => {
+                    reject(error);
+                });
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
+
+    function decryptSitePassword(username, password) {
+        return new Promise((resolve, reject) => {
+            getUserAccount(username).then((userAccount) => {
+                decryptPassword(password, userAccount.derivedKey, userAccount.iv).then((decryptedPassword) => {
+                    resolve(decryptedPassword);
+                }).catch((error) => {
+                    reject(error);
+                });
+
             }).catch((error) => {
                 reject(error);
             });
@@ -74,21 +109,27 @@ document.addEventListener("DOMContentLoaded", function() {
                     var data = event.target.result;
 
                     if (data) {
-                        data.siteUsername = siteUsername;
-                        data.password = password;
-                        data.website = website;
-                        data.username = username;
- 
-                        var putRequest = objectStore.put(data);
-    
-                        putRequest.onerror = function(event) {
-                            console.log('Error updating record: ' + event.target.errorCode);
-                        };
-    
-                        putRequest.onsuccess = function(event) {
-                            // console.log('Record updated successfully');
-                            window.location.href = 'view_passwords.html?username=' + encodeURIComponent(username);
-                        };
+                        encryptSitePassword(username, password).then((encryptedPassword) => {
+                            data.siteUsername = siteUsername;
+                            data.password = encryptedPassword;
+                            data.website = website;
+                            data.username = username;
+
+                            const transaction = db.transaction(['passwords'], 'readwrite');
+                            const objectStore = transaction.objectStore('passwords');
+                            var putRequest = objectStore.put(data);
+
+                            putRequest.onerror = function(event) {
+                                console.log('Error updating record: ' + event.target.errorCode);
+                            };
+
+                            putRequest.onsuccess = function(event) {
+                                // console.log('Record updated successfully');
+                                window.location.href = 'view_passwords.html?username=' + encodeURIComponent(username);
+                            };
+                        }).catch((error) => {
+                            console.error(error);
+                        });
                     }
                 }
             }).catch((error) => {
@@ -157,9 +198,12 @@ document.addEventListener("DOMContentLoaded", function() {
                                 const editWebsite = editForm.querySelector('#website');
 
                                 editSiteUsername.value = password.siteUsername;
-                                editPassword.value = password.password;
                                 editWebsite.value = password.website;
-                                
+
+                                decryptSitePassword(password.username, password.password).then((decryptedPassword) => {
+                                    editPassword.value = decryptedPassword;
+                                });
+
                                 listItem.appendChild(editForm);
 
                                 editForm.addEventListener('submit', function() {

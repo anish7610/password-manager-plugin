@@ -18,7 +18,7 @@ body {
     background-color: #f9f9f9;
 }
 
-.password-container {
+.password-container, .account-container {
     width: 270px;
     margin-top: 40px;
     margin-bottom: 40px;

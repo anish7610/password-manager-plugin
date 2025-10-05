@@ -1,4 +1,5 @@
-import { openIndexedDB } from "./dbService.js";
+import { getUserAccount, openIndexedDB } from "./dbService.js";
+import { hashPassword } from "./cryptoUtils.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     const loginForm =  document.getElementById('loginForm');
@@ -12,14 +13,18 @@ document.addEventListener("DOMContentLoaded", function() {
         const password = document.getElementById('password').value;
     
         // Retrieve encrypted password from IndexedDB
-        getPasswordFromIndexedDB(username).then((result) => {
+        getUserAccount(username).then((userAccount) => {
             // alert(result);
-            if (result) {
-                if (password === result.password) {
-                    window.location.href = 'view_passwords.html?username=' + encodeURIComponent(result.username);
-                } else {
-                    errorMessage.textContent = "Invalid Credentials";
-                }
+            if (userAccount) {
+                hashPassword(password).then((hashedPassword) => {
+                    if (hashedPassword === userAccount.password) {
+                        window.location.href = 'view_passwords.html?username=' + encodeURIComponent(userAccount.username);
+                    } else {
+                        errorMessage.textContent = "Invalid Credentials";
+                    }
+                }).catch((error) => {
+                    alert(error);
+                });
             } else {
                 errorMessage.textContent = "User Not Found";
             }
@@ -28,28 +33,6 @@ document.addEventListener("DOMContentLoaded", function() {
             alert("Error: " + error);
         })
     });
-    
-    function getPasswordFromIndexedDB(username) {
-        return new Promise((resolve, reject) => {
-            openIndexedDB().then((db) => {
-                const transaction = db.transaction("userAccounts", "readonly");
-                const objectStore = transaction.objectStore("userAccounts");
-        
-                const getRequest = objectStore.get(username);
-                
-                getRequest.onsuccess = function(event) {
-                    resolve(event.target.result);
-                }
-
-                getRequest.onerror = function(event) {
-                    reject("Async fetch get operation failed", error);
-                }
-               }).catch((error) => {
-                    // DB open error
-                    reject(error);
-               });
-        });
-    }
 
     createAccountButton.addEventListener('click', function(event) {
         event.preventDefault();

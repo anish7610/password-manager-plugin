@@ -1,4 +1,6 @@
-import {openIndexedDB} from "./dbService.js";
+import { openIndexedDB } from "./dbService.js";
+import { hashPassword, deriveKeyFromPassword, generateSalt, generateIV } from "./cryptoUtils.js";
+
 
 document.addEventListener("DOMContentLoaded", function() {
     const createAccountForm = document.getElementById('createAccountForm');
@@ -8,27 +10,35 @@ document.addEventListener("DOMContentLoaded", function() {
         event.preventDefault();
         
         const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        const masterPassword = document.getElementById('password').value;
 
-        // Encrypt sensitive user information
-        // const encryptedPassword = encryptData(password);
+        const iv = generateIV();
+        const salt = generateSalt();
+        const iterations = 10000;
+        const keylength = 32;
 
-        // Save encrypted user information to IndexedDB
-        saveToIndexedDB(username, password).then((result) => {
-            window.location.href = "login.html";
-        }).catch((error) => {
-            alert(error);
-        })
-    });
+        deriveKeyFromPassword(masterPassword, salt, iterations, keylength).then((derivedKey) => {
+            hashPassword(masterPassword).then((hashedMasterPassword) => {
+                // alert(derivedKey);
+                saveToIndexedDB(username, hashedMasterPassword, derivedKey, iv).then(() => {
+                    window.location.href = "login.html";
+                }).catch((error) => {
+                    alert(error);
+                });
+            }).catch((error) => {
+                alert(error);
+            });
+        });
+        });
 
-    function saveToIndexedDB(name, encryptedPassword) {
+    function saveToIndexedDB(username, hashedMasterPassword, derivedKey, iv) {
         // Open or create IndexedDB database
         return new Promise((resolve, reject) => {
             openIndexedDB().then((db) => {
                 // Store encrypted user information in database
                 const transaction = db.transaction(['userAccounts'], 'readwrite');
                 const objectStore = transaction.objectStore('userAccounts');
-                const addRequest = objectStore.add({ username: name, password: encryptedPassword });
+                const addRequest = objectStore.add({ username: username, password: hashedMasterPassword, derivedKey: derivedKey, iv: iv});
     
                 addRequest.onsuccess = function(event) {
                     // alert('Account created and saved to database');

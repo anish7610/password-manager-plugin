@@ -22,3 +22,24 @@ export function openIndexedDB() {
     }
     return dbInstance;
 }
+
+export function getUserAccount(username) {
+    return new Promise((resolve, reject) => {
+        openIndexedDB().then((db) => {
+            const transaction = db.transaction(['userAccounts'], 'readonly');
+            const objectStore = transaction.objectStore('userAccounts');
+
+            const getRequest = objectStore.get(username);
+
+            getRequest.onsuccess = function(event) {
+                resolve(event.target.result);
+            }
+
+            getRequest.onerror = function(event) {
+                reject('Error adding password to database', event.target.errorCode);
+            }
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
