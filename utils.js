@@ -228,6 +228,18 @@ export function copyToClipboard(textToCopy) {
     document.body.removeChild(tempTextarea);
 }
 
+export function showHidePassword(showButton, passwordField) {
+    if (passwordField.value) {
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            showButton.textContent = "Hide";
+        } else {
+            passwordField.type = "password";
+            showButton.textContent = "Show";
+        }
+    }
+}
+
 export function toggleVisibility(element) {
     if (element.style.display == "none") {
         element.style.display = "block";

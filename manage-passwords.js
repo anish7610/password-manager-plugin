@@ -1,10 +1,11 @@
-import { decryptSitePassword, toggleVisibility } from "./utils.js";
+import { decryptSitePassword, showHidePassword, toggleVisibility } from "./utils.js";
 import { openIndexedDB, getPassword, addPassword, updatePassword, deletePassword, getAllPasswords } from "./dbService.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     const addPasswordButton = document.getElementById("addPassword");
-    const closeButton = document.getElementById("closeButton");
+    const addCloseButton = document.getElementById("closeButton");
     const addPasswordForm = document.getElementById("addPasswordForm");
+    const addShowPasswordButton = addPasswordForm.querySelector("#showPassword");
     const passwordList = document.getElementById("password-list");
 
     let username;
@@ -30,9 +31,15 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // close addPasswordForm on add button click
-    closeButton.addEventListener('click', function(event) {
+    addCloseButton.addEventListener('click', function(event) {
         event.preventDefault();
         toggleVisibility(addPasswordForm);
+    });
+
+    addShowPasswordButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        const addPassword = addPasswordForm.querySelector('#password');
+        showHidePassword(addShowPasswordButton, addPassword);
     });
 
     // save password to indexDB
@@ -112,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
 
             const editCloseButton = editForm.querySelector("#closeButton");
-            const showPasswordButton = editForm.querySelector('#showPassword');
+            const editShowPasswordButton = editForm.querySelector('#showPassword');
 
             // close editPasswordForm
             editCloseButton.addEventListener('click', function(event) {
@@ -121,17 +128,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 editPasswordButton.disabled = false;
             });
 
-            showPasswordButton.onclick = function(event) {
+            editShowPasswordButton.onclick = function(event) {
                 event.preventDefault();
                 const editPassword = editForm.querySelector('#password');
-
-                if (editPassword.type === "password") {
-                    editPassword.type = "text";
-                    showPasswordButton.textContent = "Hide";
-                } else {
-                    editPassword.type = "password";
-                    showPasswordButton.textContent = "Show";
-                }
+                showHidePassword(editShowPasswordButton, editPassword);
             }
         }
 
