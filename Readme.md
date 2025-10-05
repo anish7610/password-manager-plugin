@@ -1,6 +1,7 @@
 ### Password Manager plugin
 
 - Go to chrome:extensions
+- Enable developer mode
 - Click on Load unpacked
 - Select the project folder
 

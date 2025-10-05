@@ -4,6 +4,7 @@ import { hashPassword, deriveKeyFromPassword, generateSalt, generateIV } from ".
 
 document.addEventListener("DOMContentLoaded", function() {
     const createAccountForm = document.getElementById('createAccountForm');
+    const LoginButton = document.getElementById('login');
     const errorMessage = document.getElementById('errorMessage');
 
     createAccountForm.addEventListener('submit', function(event) {
@@ -23,13 +24,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 saveToIndexedDB(username, hashedMasterPassword, derivedKey, iv).then(() => {
                     window.location.href = "login.html";
                 }).catch((error) => {
-                    alert(error);
+                    errorMessage.textContent = error;
                 });
             }).catch((error) => {
-                alert(error);
+                errorMessage.textContent = error;
             });
         });
-        });
+    });
+
+    LoginButton.addEventListener('click', function(event) {
+        window.location.href = "login.html";
+    });
 
     function saveToIndexedDB(username, hashedMasterPassword, derivedKey, iv) {
         // Open or create IndexedDB database

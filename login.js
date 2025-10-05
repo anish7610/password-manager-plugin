@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
         }).catch((error) => {
-            alert("Error: " + error);
+            errorMessage.textContent = error;
         })
     });
 

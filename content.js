@@ -60,7 +60,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
             passwordSelector = RENTCAFE_PASSWORD;
             break;
           default:
-            usernameSelector = DEFAULT_EMAIL;
+            if (message.username.includes("@")) {
+              usernameSelector = DEFAULT_EMAIL;
+            } else {
+              usernameSelector = DEFAULT_USERNAME
+            }
             passwordSelector = DEFAULT_PASSWORD;
         }
         autofillCredentials(usernameSelector, passwordSelector, message.username, message.password);

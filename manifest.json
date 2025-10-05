@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Password Manager",
+    "name": "PassVault",
     "version": "1.0",
     "description": "Password Manager",
     "content_security_policy": {

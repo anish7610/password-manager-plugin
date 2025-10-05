@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <img src="icon48.png" width="15%" alt="Icon">
     <div class="account-container">
         <h2>Create Your Account</h2>
         <form id="createAccountForm">
@@ -18,7 +19,10 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Create Account</button>
+            <div>
+                <button type="submit">Create Account</button>
+                <button id="login" type="submit">Back</button>
+            </div>
             <div id="errorMessage" class="error-message"></div>
         </form>
     </div>

@@ -7,6 +7,10 @@ body {
     text-align: center;
 }
 
+img {
+    margin-left: 195px;
+}
+
 .navbar {
     display: flex;
     background-color: #333;
@@ -40,10 +44,10 @@ body {
 }
 
 /* Apply styles to the login container */
-.login-container {
+.login-container, .account-container {
     width: 220px;
     margin-top: 40px;
-    margin-left: 50px;
+    margin-left: 105px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -54,11 +58,10 @@ body {
     margin-left: 150px;
 }
 
-.password-form, .account-container {
+.password-form {
     width: 235px;
     margin-top: 40px;
     margin-bottom: 40px;
-    margin-left: 20px;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -88,6 +91,12 @@ input[type="number"] {
     width: 100px;
     padding: 5px;
     margin-bottom: 10px;
+}
+
+.navbarContainer img {
+    text-align: center;
+    display: inline-block;
+    max-width: 100%;
 }
 
 #generatedPassword {
