@@ -3,9 +3,9 @@ import { openIndexedDB, getPassword, addPassword, updatePassword, deletePassword
 
 document.addEventListener("DOMContentLoaded", function() {
     const addPasswordButton = document.getElementById("addPassword");
-    const addCloseButton = document.getElementById("closeButton");
     const addPasswordForm = document.getElementById("addPasswordForm");
     const addShowPasswordButton = addPasswordForm.querySelector("#showPassword");
+    const addCloseButton = addPasswordForm.querySelector("#closeButton");
     const passwordList = document.getElementById("password-list");
 
     let username;
@@ -110,6 +110,15 @@ document.addEventListener("DOMContentLoaded", function() {
             editPasswordButton.disabled = true;
 
             var editForm = addPasswordForm.cloneNode(true);
+
+            const editShowPasswordButton = editForm.querySelector('#showPassword');
+            const editCloseButton = editForm.querySelector("#closeButton");
+            const editPassword = editForm.querySelector('#password');
+
+            // Explicitly hide password field everytime a new form is created via clone on edit button click
+            editPassword.type = "password"
+            editShowPasswordButton.textContent = "Show"
+
             fillEditForm(editForm, password);
             listItem.appendChild(editForm);
 
@@ -117,9 +126,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 event.preventDefault();
                 editPasswordDetails(editForm);
             });
-
-            const editCloseButton = editForm.querySelector("#closeButton");
-            const editShowPasswordButton = editForm.querySelector('#showPassword');
 
             // close editPasswordForm
             editCloseButton.addEventListener('click', function(event) {

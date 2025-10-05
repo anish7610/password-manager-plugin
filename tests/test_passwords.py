@@ -5,6 +5,7 @@ import random
 import csv
 import os
 import time
+import pytest
 
 
 def add_password(driver, site_data):
@@ -84,6 +85,19 @@ def validate_csv(driver, file_path, expected_site_data):
             assert row["password"] == expected_site_data[row_no]["sitePassword"]
             assert row["website"] == expected_site_data[row_no]["website"]
  
+
+def validate_show_hide_password(show_button, password_input):
+    password_input.clear()
+    password_input.send_keys("password123")
+
+    assert password_input.get_attribute("type") == "password"
+    assert show_button.text == "Show"
+
+    show_button.click()
+
+    assert password_input.get_attribute("type") == "text"
+    assert show_button.text == "Hide"
+
 
 def delete_passwords(driver):
     delete_all_passwords = """
@@ -223,3 +237,34 @@ def test_import_passwords(setup):
             assert row["website"] in bodyText
 
     delete_passwords(driver)
+
+
+@pytest.mark.parametrize("form", ["add", "edit"])
+def test_show_hide_password(setup, form):
+    driver = setup
+    if form == "add":
+        add_password_button = driver.find_element(By.ID, "addPassword")
+        add_password_button.click()
+
+        show_button = driver.find_element(By.ID, "showPassword")
+        password_input = driver.find_element(By.ID, "password")
+        close_button = driver.find_element(By.ID, "closeButton")
+    elif form == "edit":
+        site_data = {
+            "siteUsername": "qa",
+            "sitePassword": "1234",
+            "website": "facebook.com"
+        }
+
+        add_password(driver, site_data)
+
+        edit_button_xpath = f"//li[1]/button[2]"
+        edit_button = driver.find_element(By.XPATH, edit_button_xpath)
+        edit_button.click()
+
+        show_button = driver.find_element(By.XPATH, "//ul/li[1]/form/div[2]/div/button")
+        password_input = driver.find_element(By.XPATH, "//li[1]/form/div[2]/div/input")
+        close_button = driver.find_element(By.XPATH, "//ul/li[1]/form/button[2]")
+
+    validate_show_hide_password(show_button, password_input)
+    close_button.click()
