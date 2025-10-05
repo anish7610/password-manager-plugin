@@ -14,7 +14,7 @@
 
 ### Display passwords
 
-<img src="./screenshots/password-manager-plugin.png" alt="drawing" width="400"/>
+<img src="./screenshots/view-passwords.png" alt="drawing" width="400"/>
 
 ### Add Password
 
@@ -23,3 +23,16 @@
 ### Edit Password
 
 <img src="./screenshots/edit-password.png" alt="drawing" width="400"/>
+
+### Generate Password
+
+<img src="./screenshots/generate-password.png" alt="drawing" width="400"/>
+
+### Export Passwords
+
+<img src="./screenshots/export-passwords.png" alt="drawing" width="400"/>
+
+### Import Passwords
+
+<img src="./screenshots/import-passwords.png" alt="drawing" width="400"/>
+

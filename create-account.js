@@ -1,5 +1,5 @@
 import { openIndexedDB } from "./dbService.js";
-import { hashPassword, deriveKeyFromPassword, generateSalt, generateIV } from "./cryptoUtils.js";
+import { hashPassword, deriveKeyFromPassword, generateSalt, generateIV } from "./utils.js";
 
 
 document.addEventListener("DOMContentLoaded", function() {

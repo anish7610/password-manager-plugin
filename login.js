@@ -1,5 +1,5 @@
-import { getUserAccount, openIndexedDB } from "./dbService.js";
-import { hashPassword } from "./cryptoUtils.js";
+import { getUserAccount } from "./dbService.js";
+import { hashPassword } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     const loginForm =  document.getElementById('loginForm');
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     chrome.storage.local.get('isLoggedIn', function(result){
         if (result.isLoggedIn) {
-                window.location.href = 'view_passwords.html';
+                window.location.href = 'view-passwords.html';
         }
     });
 
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 hashPassword(password).then((hashedPassword) => {
                     if (hashedPassword === userAccount.password) {
                         chrome.storage.local.set({isLoggedIn: true, username: username});
-                        window.location.href = 'view_passwords.html?username=' + encodeURIComponent(userAccount.username);
+                        window.location.href = 'view-passwords.html';
                     } else {
                         errorMessage.textContent = "Invalid Credentials";
                     }
@@ -43,6 +43,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     createAccountButton.addEventListener('click', function(event) {
         event.preventDefault();
-        window.location.href = 'create_account.html'
+        window.location.href = 'create-account.html'
     });
 });
