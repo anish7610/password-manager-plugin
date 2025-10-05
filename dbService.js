@@ -8,7 +8,9 @@ export function openIndexedDB() {
         dbInstance = new Promise((resolve, reject) => {
             
             request.onerror = (event) => {
-                alert(event.target.error);
+                if (request.error && request.error.name === 'InvalidStateError') {
+                    event.preventDefault();
+                }
             }
             
             request.onsuccess = () => resolve(request.result);

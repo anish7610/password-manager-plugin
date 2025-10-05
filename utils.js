@@ -150,7 +150,7 @@ export function importPasswords(file) {
 
         chrome.storage.local.get('username', function(result){
             if (result) {
-                for (var i = 1; i < rows.length - 1; i++) {
+                for (var i = 1; i < rows.length; i++) {
                     //split by separator (,) and get the columns
                     cols = rows[i].split(',');
                     if (cols[0] != result.username) {

@@ -1,0 +1,22 @@
+[
+    {
+    "siteUsername": "bob",
+    "sitePassword": "1234",
+    "website": "facebook.com"
+    },
+    {
+     "siteUsername": "alice",
+     "sitePassword": "5678",
+     "website": "linkedin.com"   
+    },
+    {
+    "siteUsername": "john",
+    "sitePassword": "1111",
+    "website": "yahoo.com"
+    },
+    {
+     "siteUsername": "mary",
+     "sitePassword": "2222",
+     "website": "gmail.com"   
+    }
+]

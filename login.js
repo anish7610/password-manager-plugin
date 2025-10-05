@@ -3,7 +3,7 @@ import { hashPassword } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     const loginForm =  document.getElementById('loginForm');
-    const createAccountButton = document.getElementById('createAccount');
+    const registerButton = document.getElementById('register');
     const errorMessage = document.getElementById('errorMessage');
 
     chrome.storage.local.get('isLoggedIn', function(result){
@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", function() {
     loginForm.addEventListener('submit',  function(event) {
         event.preventDefault();
         
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+        const username = document.getElementById('loginUser').value;
+        const password = document.getElementById('loginPass').value;
     
         // Retrieve encrypted password from IndexedDB
         getUserAccount(username).then((userAccount) => {
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })
     });
 
-    createAccountButton.addEventListener('click', function(event) {
+    registerButton.addEventListener('click', function(event) {
         event.preventDefault();
         window.location.href = 'create-account.html'
     });

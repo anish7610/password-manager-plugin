@@ -8,11 +8,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const passwordList = document.getElementById("password-list");
 
     let username;
-    chrome.storage.local.get('username', function(result){
-        if (result.username) {
-            // display all passwords on page load
-            username = result.username;
-            displayPasswords(username);
+
+    chrome.storage.local.get('isLoggedIn', function(result){
+        if (!result.isLoggedIn) {
+                window.location.href = 'login.html';
+        } else {
+            chrome.storage.local.get('username', function(result){
+                if (result.username) {
+                    // display all passwords on page load
+                    username = result.username;
+                    displayPasswords(username);
+                }
+            });
         }
     });
 
