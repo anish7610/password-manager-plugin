@@ -43,13 +43,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const password = document.getElementById("password").value;
         const website = document.getElementById("website").value;  
     
-        addPassword(username, siteUsername, password, website).then((passwords) => {
-                displayPasswords(username).then((result) => {
-            })
+        addPassword(username, siteUsername, password, website).then(() => {
+            displayPasswords(username);
         }).catch((error) => {
             console.error(error);
         })
     });
+
 
     function displayPasswords(username) {
         return new Promise((resolve, reject) => {
@@ -104,7 +104,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
                                 closeButton.addEventListener('click', function(event) {
                                     event.preventDefault();
-                                    console.log("close button");
                                     editForm.style.display = 'none';
                                 });
 
@@ -128,7 +127,9 @@ document.addEventListener("DOMContentLoaded", function() {
                                     const siteUsername = editForm.querySelector('#siteUsername').value;
                                     const password = editForm.querySelector('#password').value;
                                     const website = editForm.querySelector('#website').value;
-                                    updatePassword(id, username, siteUsername, password, website);
+                                    updatePassword(id, username, siteUsername, password, website).then(function() {
+                                        location.reload();
+                                    });
                                 });
                             }
 
@@ -146,8 +147,16 @@ document.addEventListener("DOMContentLoaded", function() {
                             deletePasswordButton.onclick = function() {
                                 const transaction = db.transaction(['passwords'], 'readwrite');
                                 const objectStore = transaction.objectStore('passwords');
-                                objectStore.delete(password.id);
-                                displayPasswords(username);
+                                var delRequest = objectStore.delete(password.id);
+
+                                delRequest.onerror = function(event) {
+                                    console.error("Failed to delete password");
+                                }
+
+                                delRequest.onsuccess = function(event) {
+                                    location.reload();
+                                }
+
                             }
 
                             listItem.appendChild(deletePasswordButton);

@@ -151,17 +151,20 @@ export function importPasswords(file) {
         chrome.storage.local.get('username', function(result){
             if (result) {
                 for (var i = 1; i < rows.length; i++) {
-                    //split by separator (,) and get the columns
-                    cols = rows[i].split(',');
-                    if (cols[0] != result.username) {
-                        cols[0] = result.username;
-                    }
-                    cols[2] = decodeURIComponent(cols[2]);
-                    addPassword(cols[0], cols[1], cols[2], cols[3]).then(() => {
+                    if (rows[i]) {
+                        cols = rows[i].split(',');
 
-                    }).catch((error) => {
-                        document.getElementById("fileImportSuccessfulMessage").textContent = error;
-                    });
+                        if (cols[0] != result.username) {
+                            cols[0] = result.username;
+                        }
+
+                        cols[2] = decodeURIComponent(cols[2]);
+                        addPassword(cols[0], cols[1], cols[2], cols[3]).then(() => {
+
+                        }).catch((error) => {
+                            document.getElementById("fileImportSuccessfulMessage").textContent = error;
+                        });
+                    }
                 }
                 document.getElementById("fileImportSuccessfulMessage").textContent = "Passwords imported successfully";
             }
@@ -195,6 +198,7 @@ function downloadCSV(filename, headers, data) {
         var values = Object.values(obj);
         csv += values.join(',') + '\n';
     });
+
 
     // Create a data URI for the CSV content
     var encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv);

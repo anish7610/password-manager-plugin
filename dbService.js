@@ -144,7 +144,7 @@ export function updatePassword(id, username, siteUsername, password, website) {
 
                         putRequest.onsuccess = function(event) {
                             // console.log('Record updated successfully');
-                            window.location.href = 'view-passwords.html?username=' + encodeURIComponent(username);
+                            resolve();
                         };
                     }).catch((error) => {
                         console.error(error);

@@ -4,8 +4,9 @@
 
 ### Run Tests
 
-- pytest -v --rootdir=tests
+- pytest -v -s tests
 
 ### Filter tests
 
-- pytest -v --rootdir=tests -k test_passwords.py
+- pytest -v -s -k test_passwords
+- pytest -v -s -k test_edit
