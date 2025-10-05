@@ -68,13 +68,13 @@ img {
     background-color: #f9f9f9;
 }
 
+.editPassword {
+    display: flex;
+}
+
 .show-button {
     float: left; /* Align the button to the right */
     margin-right: 10px;
-  }
-
-.hidden {
-    display: none;
 }
 
 /* Apply styles to the form elements */

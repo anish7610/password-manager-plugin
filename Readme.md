@@ -37,3 +37,10 @@
 
 <img src="./screenshots/import-passwords.png" alt="drawing" width="400"/>
 
+### Show Password
+
+<img src="./screenshots/show-password.png" alt="drawing" width="400"/>
+
+### Hide Password
+
+<img src="./screenshots/hide-password.png" alt="drawing" width="400"/>

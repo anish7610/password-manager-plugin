@@ -36,7 +36,7 @@ def edit_form_fields(driver, list_item_id, edit_field_values):
     
     # Edit Form Fields
     site_username_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[1]/input")
-    site_password_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[2]/input")
+    site_password_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[2]/div/input")
     site_website_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[3]/input")
     edit_form_submit_button = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/button[1]")
 
@@ -65,7 +65,7 @@ def validate_form_fields(driver, list_item_id, edit_field_values):
     site_username_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[1]/input")
     assert site_username_input.get_attribute("value") == edit_field_values["username"]
 
-    site_password_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[2]/input")
+    site_password_input = driver.find_element(By.XPATH, f"//li[{list_item_id}]/form/div[2]/div/input")
     assert site_password_input.get_attribute("value") == edit_field_values["password"]
 
 

@@ -1,4 +1,4 @@
-import { decryptSitePassword } from "./utils.js";
+import { decryptSitePassword, toggleVisibility } from "./utils.js";
 import { openIndexedDB, getPassword, addPassword, updatePassword, deletePassword, getAllPasswords } from "./dbService.js";
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -26,13 +26,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // open addPasswordForm on add button click
     addPasswordButton.addEventListener('click', function(event) {
         event.preventDefault();
-        toggleFormVisibility();
+        toggleVisibility(addPasswordForm);
     });
 
     // close addPasswordForm on add button click
     closeButton.addEventListener('click', function(event) {
         event.preventDefault();
-        toggleFormVisibility();
+        toggleVisibility(addPasswordForm);
     });
 
     // save password to indexDB
@@ -99,14 +99,32 @@ document.addEventListener("DOMContentLoaded", function() {
         listItem.appendChild(autoFillButton);
 
         editPasswordButton.onclick = function() {
+            // disable edit button
+            editPasswordButton.disabled = true;
+
             var editForm = addPasswordForm.cloneNode(true);
-            buildEditForm(editForm, password);
+            fillEditForm(editForm, password);
             listItem.appendChild(editForm);
 
             editForm.addEventListener('submit', function(event) {
                 event.preventDefault();
                 editPasswordDetails(editForm);
             });
+
+            const showPasswordButton = editForm.querySelector('#showPassword');
+
+            showPasswordButton.onclick = function(event) {
+                event.preventDefault();
+                const editPassword = editForm.querySelector('#password');
+
+                if (editPassword.type === "password") {
+                    editPassword.type = "text";
+                    showPasswordButton.textContent = "Hide";
+                } else {
+                    editPassword.type = "password";
+                    showPasswordButton.textContent = "Show";
+                }
+            }
         }
 
         deletePasswordButton.onclick = function() {
@@ -120,11 +138,10 @@ document.addEventListener("DOMContentLoaded", function() {
         autoFillButton.onclick = function() {
             autoFill(autoFillButton);
         };
-
         return listItem;
     }
 
-    function buildEditForm(editForm, password) {
+    function fillEditForm(editForm, password) {
         editForm.style.display = 'block';
         editForm.setAttribute('username', password.username);
         editForm.setAttribute('id', password.id);
@@ -168,14 +185,5 @@ document.addEventListener("DOMContentLoaded", function() {
             var activeTab = tabs[0];
             chrome.tabs.sendMessage(activeTab.id, { action: 'autofill', username: username, password: password, title: activeTab.title});
         });
-    }
-
-    function toggleFormVisibility() {
-        var form = document.getElementById('addPasswordForm');
-        if (form.classList.contains("hidden")) {
-            form.classList.remove("hidden");
-        } else {
-            form.classList.add("hidden")
-        }
     }
 });
