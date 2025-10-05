@@ -102,6 +102,11 @@ def delete_passwords(driver):
         };
     """
     driver.execute_script(delete_all_passwords)
+    driver.refresh()
+
+    # Validate passwords are deleted
+    bodyText = driver.find_element(By.TAG_NAME, 'body').text
+    assert 'Edit' not in bodyText
 
 
 def test_add_password(setup):
@@ -117,7 +122,6 @@ def test_add_password(setup):
         assert site["website"] == link_text.text
 
     delete_passwords(driver)
-    driver.refresh()
 
 
 def test_edit_password(setup):
@@ -141,7 +145,6 @@ def test_edit_password(setup):
     validate_form_fields(driver, list_item_id, edit_field_values)
 
     delete_passwords(driver)
-    driver.refresh()
 
 
 def test_delete_password(setup):
@@ -187,8 +190,11 @@ def test_export_passwords(setup):
 
     validate_csv(driver, file_path + ".csv", site_data)
 
+    # cleanup
+    home_page = driver.find_element(By.ID, "home")
+    home_page.click()
+
     delete_passwords(driver)
-    driver.refresh()
 
 
 def test_import_passwords(setup):
@@ -217,4 +223,3 @@ def test_import_passwords(setup):
             assert row["website"] in bodyText
 
     delete_passwords(driver)
-    driver.refresh()
