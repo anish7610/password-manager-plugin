@@ -55,7 +55,7 @@ def edit_form_fields(driver, list_item_id, edit_field_values):
 
 def validate_form_fields(driver, list_item_id, edit_field_values):
     # Validate Edited website in list item
-    link_text = driver.find_element(By.XPATH,  f"//li[{list_item_id}]/a") 
+    link_text = driver.find_element(By.XPATH,  f"//li[{list_item_id}]/a")
     assert edit_field_values["website"] == link_text.text
 
     # Validate Edited Form Fields
@@ -117,6 +117,7 @@ def test_add_password(setup):
         assert site["website"] == link_text.text
 
     delete_passwords(driver)
+    driver.refresh()
 
 
 def test_edit_password(setup):
@@ -140,6 +141,7 @@ def test_edit_password(setup):
     validate_form_fields(driver, list_item_id, edit_field_values)
 
     delete_passwords(driver)
+    driver.refresh()
 
 
 def test_delete_password(setup):
@@ -186,6 +188,7 @@ def test_export_passwords(setup):
     validate_csv(driver, file_path + ".csv", site_data)
 
     delete_passwords(driver)
+    driver.refresh()
 
 
 def test_import_passwords(setup):
@@ -214,3 +217,4 @@ def test_import_passwords(setup):
             assert row["website"] in bodyText
 
     delete_passwords(driver)
+    driver.refresh()

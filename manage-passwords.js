@@ -1,5 +1,5 @@
 import { decryptSitePassword } from "./utils.js";
-import { openIndexedDB, getPassword, addPassword, updatePassword, deletePassword } from "./dbService.js";
+import { openIndexedDB, getPassword, addPassword, updatePassword, deletePassword, getAllPasswords } from "./dbService.js";
 
 document.addEventListener("DOMContentLoaded", function() {
     const addPasswordButton = document.getElementById("addPassword");
@@ -43,8 +43,16 @@ document.addEventListener("DOMContentLoaded", function() {
         const password = document.getElementById("password").value;
         const website = document.getElementById("website").value;  
     
-        addPassword(username, siteUsername, password, website).then(() => {
-            displayPasswords(username);
+        addPassword(username, siteUsername, password, website).then((event) => {
+            var passwordId = event.target.result;
+            var listItem = createListItem({
+                "id": passwordId,
+                "username": username,
+                "siteUsername": siteUsername,
+                "password": password,
+                "website": website
+            });
+            passwordList.appendChild(listItem);
         }).catch((error) => {
             console.error(error);
         })
@@ -53,29 +61,13 @@ document.addEventListener("DOMContentLoaded", function() {
     function displayPasswords(username) {
         return new Promise((resolve, reject) => {
             openIndexedDB().then((db) => {
-                const transaction = db.transaction(['passwords'], 'readonly');
-                const objectStore = transaction.objectStore('passwords');
-                const index = objectStore.index('username');
-                const range = IDBKeyRange.only(username);
-                const passwords = [];
-
-                index.openCursor(range).onsuccess = function(event) {
-                    const cursor = event.target.result;
-                    if (cursor) {
-                        passwords.push(cursor.value);
-                        cursor.continue();
-                    } else {
-                        // Loop through each child element and remove it
-                        while (passwordList.firstChild) {
-                            passwordList.removeChild(passwordList.firstChild);
-                        }
-
-                        passwords.forEach(function(password) {
-                            const listItem = createListItem(password);
-                            passwordList.appendChild(listItem);
-                        });
+                getAllPasswords(username).then((passwords) => {
+                    for (let i = 0; i < passwords.length; i++) {
+                        var listItem = createListItem(passwords[i]);
+                        // console.log(listItem);
+                        passwordList.appendChild(listItem);
                     }
-                }
+                });
             }).catch((error) => {
                 reject(error);
             });
@@ -119,7 +111,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         deletePasswordButton.onclick = function() {
             deletePassword(password.id).then(() => {
-                location.reload();
+                var listItem = document.getElementById(password.id);
+                // console.log(listItem);
+                passwordList.removeChild(listItem);
             });
         }
 

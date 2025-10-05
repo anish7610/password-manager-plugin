@@ -101,7 +101,7 @@ export function addPassword(username, siteUsername, password, website) {
                 const addRequest = objectStore.add({username: username, siteUsername: siteUsername, password: encryptedPassword, website: website});
 
                 addRequest.onsuccess = function(event) {
-                    resolve();
+                    resolve(event);
                 }
 
                 addRequest.onerror = function(event) {
